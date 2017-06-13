@@ -4,6 +4,15 @@ The goal of this project is to solve the N-puzzle game using the __A*__ search a
 
 ## Example
 
+_start position_
+
+ 5 | 2  | 9 
+--| -- | --
+3 | x | 1
+8 | 7 | x
+
+_final wanted position_
+
  1 | 2  | 3 
 --| -- | --
 4 | 5 | 6
