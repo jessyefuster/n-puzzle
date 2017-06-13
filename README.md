@@ -3,6 +3,8 @@
 The goal of this project is to solve the N-puzzle game using the __A*__ search algorithm or one of its variants.
 
 ## Example
+  |   |  
+-- | -- | --
 1 | 2 | 3
 4 | 5 | 6
 7 | 8 | x
