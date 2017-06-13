@@ -4,11 +4,10 @@ The goal of this project is to solve the N-puzzle game using the __A*__ search a
 
 ## Example
 
-  |   |  
-  --| -- | --
-  1 | 2 | 3
-  4 | 5 | 6
-  7 | 8 | x
+ 1 | 2  | 3 
+--| -- | --
+4 | 5 | 6
+7 | 8 | x
 
 ## Beginning
 You start with a square board made up of N*N cells. One of these cells will be empty, the others will contain numbers, starting from 1, that will be unique in this instance of the puzzle.
