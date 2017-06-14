@@ -8,12 +8,11 @@ def printPuzzle(puzzle, solv):
 	for line in puzzle:
 		for box in line:
 			print(box, end=' ')
-		print('')
+		print()
 
 
 
-def makePuzzle(size, solvable):
-	totalSize = size * size
+def orderedPuzzle(size):
 	puzzle = [ [0] * size for i in range(0, size) ]
 	number = 1
 
@@ -22,6 +21,27 @@ def makePuzzle(size, solvable):
 			puzzle[y][x] = 0 if ( y == size - 1 and x == size - 1 ) else number
 
 			number += 1
+
+	return (puzzle)
+
+
+
+def shufflePuzzle(puzzle, iterations):
+	return (puzzle)
+
+
+
+def generatePuzzle(size, solvable, iterations):
+
+	puzzle = orderedPuzzle(size)
+	puzzle = shufflePuzzle(puzzle, iterations)
+
+	# MAKE UNSOLVABLE
+	if not solvable:
+		if puzzle[0][0] == 0 or puzzle[0][1] == 0:
+			puzzle[size - 1][-1], puzzle[size - 1][-2] = puzzle[size - 1][-2], puzzle[size - 1][-1]
+		else:
+			puzzle[0][0], puzzle[0][1] = puzzle[0][1], puzzle[0][0]
 
 	return(puzzle)
 
@@ -57,7 +77,7 @@ if __name__ == '__main__':
 
 
 	# PUZZLE MAKING
-	puzzle = makePuzzle(size=args.size, solvable=solvable)
+	puzzle = generatePuzzle(size=args.size, solvable=solvable, iterations=args.iterations)
 
 
 	printPuzzle(puzzle, solvable)
