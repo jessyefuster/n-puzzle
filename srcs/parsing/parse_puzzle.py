@@ -46,7 +46,7 @@ def check_if_good(puzzle):
 
 
 def parse():
-	final = []
+	list_line_puzzle = []
 
 	try:
 		map_name = str(sys.argv[1])
