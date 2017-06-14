@@ -5,9 +5,9 @@ var_length = []
 
 def check_all_number(puzzle):
 	tab = []
-	for x in puzzle:
-		for y in x:
-			tab.append(y)
+	for line in puzzle:
+		for value in line:
+			tab.append(value)
 
 	tab = [item for sublist in puzzle for item in sublist]
 	tab = [int(i) for i in tab]
