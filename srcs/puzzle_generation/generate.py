@@ -6,8 +6,8 @@ import random
 def printPuzzle(puzzle, solv):
 	print("#{}".format('solvable' if solv else 'unsolvable'))
 	for line in puzzle:
-		for box in line:
-			print(box, end=' ')
+		for cell in line:
+			print(cell, end=' ')
 		print()
 
 
@@ -17,7 +17,7 @@ def orderedPuzzle(size):
 	number = 1
 
 	for y, line in enumerate(puzzle):
-		for x, box in enumerate(line):
+		for x, cell in enumerate(line):
 			puzzle[y][x] = 0 if ( y == size - 1 and x == size - 1 ) else number
 
 			number += 1
@@ -27,6 +27,43 @@ def orderedPuzzle(size):
 
 
 def shufflePuzzle(puzzle, iterations):
+	def findEmptyCell():
+		for y, line in enumerate(puzzle):
+			try:
+				x = line.index(0)
+				return (y, x)
+			except ValueError:
+				pass
+
+	def swapUp(y, x):
+		puzzle[y][x], puzzle[y - 1][x] = puzzle[y - 1][x], puzzle[y][x]
+	def swapDown(y, x):
+		puzzle[y][x], puzzle[y][x] = puzzle[y + 1][x], puzzle[y][x]
+	def swapLeft(y, x):
+		puzzle[y][x], puzzle[y][x - 1] = puzzle[y][x - 1], puzzle[y][x]
+	def swapRight(y, x):
+		puzzle[y][x], puzzle[y][x + 1] = puzzle[y][x + 1], puzzle[y][x]
+
+	def randomSwap(y, x):
+		swap = {
+			'u': swapUp,
+			'd': swapDown,
+			'l': swapLeft,
+			'r': swapRight
+		}
+		move = random.choice(['u', 'd', 'l', 'r'])
+
+		try:
+			swap[move](emptyCellY, emptyCellX)
+		except Exception as e:
+			randomSwap(y, x)
+
+
+
+	for i in range(0, iterations):
+		emptyCellY, emptyCellX = findEmptyCell()
+		randomSwap(emptyCellY, emptyCellX)
+
 	return (puzzle)
 
 
@@ -48,7 +85,6 @@ def generatePuzzle(size, solvable, iterations):
 
 
 if __name__ == '__main__':
-
 
 	# ARGUMENT PARSING
 	parser = argparse.ArgumentParser(description="N-puzzle generator")
