@@ -63,16 +63,12 @@ def parse():
 					comment = line[index:]
 					line_puzzle = line[:index]
 					line_split = re.sub('[\t|\s]+', ' ', line_puzzle)
-					mdr_g_chercher_pour_rien = line_split.split()
-					line_puzzle = mdr_g_chercher_pour_rien
-					final.append(line_puzzle)
+					line_puzzle = line_split.split()
+					list_line_puzzle.append(line_puzzle)
 				else:
 					line_puzzle = line.split()
-					final.append(line_puzzle)
-				# print("line_puzzle: %s" % line_puzzle)
-				# print("comment: %s" % comment)
-				# print("line_split: %s" % line_split)
-			puzzle = [x for x in final if x]
+					list_line_puzzle.append(line_puzzle)
+			puzzle = [x for x in list_line_puzzle if x]
 			len_top_file = puzzle[0]
 			var_length.append(len_top_file[0])
 			puzzle.pop(0)
@@ -80,7 +76,6 @@ def parse():
 				y = 0
 				while (puzzle[y]):
 					if set(puzzle[y]) & set(puzzle[y + 1]):
-						# print(set(puzzle[y]) & set(puzzle[y + 1]))
 						sys.exit('error: You have put wrong number somewhere')
 					y += 1
 			except IndexError:
@@ -88,10 +83,11 @@ def parse():
 
 	except IOError as e:
 		print("error: %s" % e)
-
+	check_if_good(puzzle)
+	check_all_number(puzzle)
 	return(puzzle)
 
+
+# TO CHANGE
 mdr_le_puzzle = parse()
-mdr_le_vrai_puzzle = check_if_good(mdr_le_puzzle)
-mdr_un_autre_puzzle = check_all_number(mdr_le_puzzle)
-# print(mdr_un_autre_puzzle)
+print(mdr_le_puzzle)
