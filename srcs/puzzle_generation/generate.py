@@ -34,7 +34,7 @@ def shufflePuzzle(puzzle, iterations):
 				return (y, x)
 			except ValueError:
 				pass
-
+	### SWAP FUNCTIONS ###
 	def swapUp(y, x):
 		puzzle[y][x], puzzle[y - 1][x] = puzzle[y - 1][x], puzzle[y][x]
 	def swapDown(y, x):
@@ -43,7 +43,7 @@ def shufflePuzzle(puzzle, iterations):
 		puzzle[y][x], puzzle[y][x - 1] = puzzle[y][x - 1], puzzle[y][x]
 	def swapRight(y, x):
 		puzzle[y][x], puzzle[y][x + 1] = puzzle[y][x + 1], puzzle[y][x]
-
+	### MAIN SWAP ###
 	def randomSwap(y, x):
 		swap = {
 			'u': swapUp,
@@ -57,7 +57,6 @@ def shufflePuzzle(puzzle, iterations):
 			swap[move](emptyCellY, emptyCellX)
 		except Exception as e:
 			randomSwap(y, x)
-
 
 
 	for i in range(0, iterations):
