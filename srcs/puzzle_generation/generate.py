@@ -68,7 +68,6 @@ def shufflePuzzle(puzzle, iterations):
 
 
 def generatePuzzle(size, solvable, iterations):
-
 	puzzle = orderedPuzzle(size)
 	puzzle = shufflePuzzle(puzzle, iterations)
 
