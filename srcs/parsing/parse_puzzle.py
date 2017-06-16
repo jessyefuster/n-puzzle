@@ -25,7 +25,6 @@ def check_if_good(puzzle):
 		i = 0
 		check_len_line.append(len(tab))
 		for value in tab:
-			# print("mdr la valeur comme le raton: %s" % value)
 			if re.match("[0-9]", value) is None:
 				sys.exit('error: Invalid value in map')
 			i += 1
@@ -90,4 +89,3 @@ def parse():
 
 # TO CHANGE
 mdr_le_puzzle = parse()
-print(mdr_le_puzzle)
