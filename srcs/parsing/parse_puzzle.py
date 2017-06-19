@@ -86,7 +86,3 @@ def parse():
 	check_if_good(puzzle)
 	check_all_number(puzzle)
 	return(puzzle)
-
-
-# TO CHANGE
-mdr_le_puzzle = parse()
