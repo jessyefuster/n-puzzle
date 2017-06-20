@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys
 import copy
+import random
 
 class Puzzle:
 	def __init__(self, puzzle):
@@ -10,7 +11,7 @@ class Puzzle:
 
 		self.goal = self.makeGoal()
 
-		self.heuristic = self.manhattan
+		self.heuristic = self.misplaced
 		self.swaps = [self.swapUp, self.swapDown, self.swapLeft, self.swapRight]
 
 
@@ -83,7 +84,7 @@ class Puzzle:
 			for start_x, value in enumerate(line):
 				if value:
 					end_x, end_y = self.searchPosition(value)
-					dist += abs(start_x - start_y) + abs(end_x - end_y)
+					dist += abs(start_x - end_x) + abs(start_y - end_y)
 		return (dist)
 
 	def	euclidian(self, puzzle):
@@ -96,7 +97,7 @@ class Puzzle:
 			for start_x, value in enumerate(line):
 				if value:
 					end_x, end_y = self.searchPosition(value)
-					dist += ( (start_x - start_y) ** 2 + (start_x - start_y) ** 2 ) ** 0.5
+					dist += ( (start_x - end_x) ** 2 + (start_y - end_y) ** 2 ) ** 0.5
 		return (dist)
 
 	def	misplaced(self, puzzle):
@@ -158,40 +159,48 @@ class Puzzle:
 		for state in nextArray:
 			costArray.append(self.heuristic(state))
 
-		# self.printPuzzle(self.puzzle)
-		# print(costArray)
-		# print()
-		# for state in nextArray:
-		# 	self.printPuzzle(state)
-		# 	print()
+		self.printPuzzle(self.puzzle)
+		print(costArray)
+		print()
+		for state in nextArray:
+			self.printPuzzle(state)
+			print()
 
-		# print("\n==============")
-		# print()
+		print("\n==============")
+		print()
 
 		leastCost = min(costArray)
 		if costArray.count(leastCost) > 1:
-			pass
+			costIndexes = [i for i, val in enumerate(costArray) if val == leastCost]
+			print("costsIndexes ", costIndexes)
+			costIndex = random.choice(costIndexes)
+		else:
+			costIndex = costArray.index(leastCost)
 
-		optimalState = nextArray[costArray.index(min(costArray))]
+		optimalState = nextArray[costIndex]
 
 		return (optimalState)
 	#################
 
+	def costs(self):
+		print(self.manhattan(self.puzzle))
+		print(self.euclidian(self.puzzle))
+		print(self.misplaced(self.puzzle))
+
 
 	###   SOLVE   ###
 	def resolved(self):
-		flat = self.flatten(self.puzzle)
-		return (flat == self.goal)
+		return (self.puzzle == self.goal)
 
 
 	def resolve(self):
-		i = 0
 
-		while not self.resolved() and i < 5:
+		while not self.resolved():
 			self.puzzle = self.nextStep()
 			# self.printPuzzle(self.puzzle)
 			# print()
-			i += 1
+
+		print("RESOLVED")
 	#################
 		
 
@@ -202,17 +211,19 @@ class Puzzle:
 if __name__ == '__main__':
 
 	# solvable
-	puzzle = [	[5, 12, 7, 13],
-				[15, 8, 0, 6],
-				[14, 4, 3, 2],
-				[9, 1, 11, 10]	]
+	# puzzle = [	[5, 12, 7, 13],
+	# 			[15, 8, 0, 6],
+	# 			[14, 4, 3, 2],
+	# 			[9, 1, 11, 10]	]
+	puzzle = [	[0, 6, 8],
+				[5, 1, 3],
+				[7, 4, 2]	]
 
 
 	P = Puzzle(puzzle)
 
-
-
-	if not P.solvable():
-		print("Not solvable")
-	else:
-		P.resolve()
+	P.resolve()
+	# if not P.solvable():
+	# 	print("Not solvable")
+	# else:
+	# 	P.resolve()
