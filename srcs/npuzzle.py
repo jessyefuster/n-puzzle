@@ -153,33 +153,65 @@ class Puzzle:
 
 		return (nextStates)
 
+	# def nextStep(self):
+	# 	nextArray = self.nextStates()
+	# 	costArray = []
+	# 	for state in nextArray:
+	# 		costArray.append(self.heuristic(state))
+
+	# 	self.printPuzzle(self.puzzle)
+	# 	print(costArray)
+	# 	print()
+	# 	for state in nextArray:
+	# 		self.printPuzzle(state)
+	# 		print()
+
+	# 	print("\n==============")
+	# 	print()
+
+	# 	leastCost = min(costArray)
+	# 	if costArray.count(leastCost) > 1:
+	# 		costIndexes = [i for i, val in enumerate(costArray) if val == leastCost]
+	# 		print("costsIndexes ", costIndexes)
+	# 		costIndex = random.choice(costIndexes)
+	# 	else:
+	# 		costIndex = costArray.index(leastCost)
+
+	# 	optimalState = nextArray[costIndex]
+
+	# 	return (optimalState)
+	def createNode(puzzle=0, g=0, h=0):
+		return ({
+			'f': g + h,
+			'g': g,
+			'h': h,
+			'state': puzzle,
+			'parent': None
+		})
+
 	def nextStep(self):
-		nextArray = self.nextStates()
-		costArray = []
-		for state in nextArray:
-			costArray.append(self.heuristic(state))
+		openSet = []
+		closedSet = []
+		# openSet.append(createNode(self.puzzle))
 
-		self.printPuzzle(self.puzzle)
-		print(costArray)
-		print()
-		for state in nextArray:
-			self.printPuzzle(state)
-			print()
+		# while the open list is not empty
+		#     find the node with the least f on the open list, call it "q"
+		#     pop q off the open list
+		#     generate q's 8 successors and set their parents to q
+		#     for each successor
+		#     	if successor is the goal, stop the search
+		#         successor.g = q.g + distance between successor and q
+		#         successor.h = distance from goal to successor
+		#         successor.f = successor.g + successor.h
 
-		print("\n==============")
-		print()
-
-		leastCost = min(costArray)
-		if costArray.count(leastCost) > 1:
-			costIndexes = [i for i, val in enumerate(costArray) if val == leastCost]
-			print("costsIndexes ", costIndexes)
-			costIndex = random.choice(costIndexes)
-		else:
-			costIndex = costArray.index(leastCost)
-
-		optimalState = nextArray[costIndex]
-
-		return (optimalState)
+		#         if a node with the same position as successor is in the OPEN list \
+		#             which has a lower f than successor, skip this successor
+		#         if a node with the same position as successor is in the CLOSED list \ 
+		#             which has a lower f than successor, skip this successor
+		#         otherwise, add the node to the open list
+		#     end
+		#     push q on the closed list
+		# end
 	#################
 
 	def costs(self):
@@ -215,14 +247,16 @@ if __name__ == '__main__':
 	# 			[15, 8, 0, 6],
 	# 			[14, 4, 3, 2],
 	# 			[9, 1, 11, 10]	]
-	puzzle = [	[0, 6, 8],
-				[5, 1, 3],
-				[7, 4, 2]	]
+	puzzle = [	[4, 5, 3],
+				[8, 7, 1],
+				[6, 2, 0]	]
 
 
 	P = Puzzle(puzzle)
 
-	P.resolve()
+	print(P.flatten(P.puzzle))
+	# P.resolve()
+
 	# if not P.solvable():
 	# 	print("Not solvable")
 	# else:
