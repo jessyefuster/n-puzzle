@@ -38,7 +38,7 @@ def shufflePuzzle(puzzle, iterations):
 	def swapUp(y, x):
 		puzzle[y][x], puzzle[y - 1][x] = puzzle[y - 1][x], puzzle[y][x]
 	def swapDown(y, x):
-		puzzle[y][x], puzzle[y][x] = puzzle[y + 1][x], puzzle[y][x]
+		puzzle[y][x], puzzle[y + 1][x] = puzzle[y + 1][x], puzzle[y][x]
 	def swapLeft(y, x):
 		puzzle[y][x], puzzle[y][x - 1] = puzzle[y][x - 1], puzzle[y][x]
 	def swapRight(y, x):
