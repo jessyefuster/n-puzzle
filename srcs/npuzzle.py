@@ -2,6 +2,11 @@
 import sys
 import copy
 import random
+import heapq
+import argparse
+
+from ntree import *
+from puzzle_generation import generate
 
 class Puzzle:
 	def __init__(self, puzzle):
@@ -11,7 +16,7 @@ class Puzzle:
 
 		self.goal = self.makeGoal()
 
-		self.heuristic = self.misplaced
+		self.heuristic = self.manhattan
 		self.swaps = [self.swapUp, self.swapDown, self.swapLeft, self.swapRight]
 
 
@@ -34,8 +39,8 @@ class Puzzle:
 
 		return (puzzle)
 
-	def findEmptyCell(self):
-		for y, line in enumerate(self.puzzle):
+	def findEmptyCell(self, puzzle):
+		for y, line in enumerate(puzzle):
 			try:
 				x = line.index(0)
 				return (y, x)
@@ -140,78 +145,52 @@ class Puzzle:
 
 
 	###   MOVES   ###
-	def nextStates(self):
-		empty = self.findEmptyCell()
+	def nextStates(self, baseState):
+		empty = self.findEmptyCell(baseState.puzzle)
 		nextStates = []
 		
 		for swap in self.swaps:
-			puzzle = copy.deepcopy(self.puzzle)
+			puzzle = copy.deepcopy(baseState.puzzle)
 			puzzle = swap(puzzle, empty)
 			
 			if puzzle:
-				nextStates.append(puzzle)
+				nextStates.append(StateNode(puzzle=puzzle, g=baseState.g, h=self.heuristic(puzzle), parent=baseState))
 
 		return (nextStates)
 
-	# def nextStep(self):
-	# 	nextArray = self.nextStates()
-	# 	costArray = []
-	# 	for state in nextArray:
-	# 		costArray.append(self.heuristic(state))
 
-	# 	self.printPuzzle(self.puzzle)
-	# 	print(costArray)
-	# 	print()
-	# 	for state in nextArray:
-	# 		self.printPuzzle(state)
-	# 		print()
+	def better(self, OpenSet, State):
+		for t in OpenSet:
+			if t[1].puzzle == State.puzzle and t[1].cost <= State.cost:
+				return (True)
+		return (False)
 
-	# 	print("\n==============")
-	# 	print()
 
-	# 	leastCost = min(costArray)
-	# 	if costArray.count(leastCost) > 1:
-	# 		costIndexes = [i for i, val in enumerate(costArray) if val == leastCost]
-	# 		print("costsIndexes ", costIndexes)
-	# 		costIndex = random.choice(costIndexes)
-	# 	else:
-	# 		costIndex = costArray.index(leastCost)
+	def aStar(self):
+		OpenSet = []
+		closedSet = {}
 
-	# 	optimalState = nextArray[costIndex]
+		firstNode = StateNode(puzzle=self.puzzle, g=0, h=self.heuristic(self.puzzle), parent=None)
+		heapq.heappush(OpenSet, (firstNode.cost, firstNode))
 
-	# 	return (optimalState)
-	def createNode(puzzle=0, g=0, h=0):
-		return ({
-			'f': g + h,
-			'g': g,
-			'h': h,
-			'state': puzzle,
-			'parent': None
-		})
+		while OpenSet:
+			leastCostState = heapq.heappop(OpenSet)[1]
+			# print("evaluating {}".format(leastCostState))
+			nextStates = self.nextStates(leastCostState)
 
-	def nextStep(self):
-		openSet = []
-		closedSet = []
-		# openSet.append(createNode(self.puzzle))
+			# print('possibilities: ', nextStates)
+			for state in nextStates:
+				if self.resolved(state.puzzle):
+					print("Solution found")
+					return (state)
+				if self.better(OpenSet, state) or (state.key in closedSet and closedSet[state.key].cost <= state.cost):
+					pass
+				else:
+					# print('   added ', state)
+					heapq.heappush(OpenSet, (state.cost, state))
 
-		# while the open list is not empty
-		#     find the node with the least f on the open list, call it "q"
-		#     pop q off the open list
-		#     generate q's 8 successors and set their parents to q
-		#     for each successor
-		#     	if successor is the goal, stop the search
-		#         successor.g = q.g + distance between successor and q
-		#         successor.h = distance from goal to successor
-		#         successor.f = successor.g + successor.h
-
-		#         if a node with the same position as successor is in the OPEN list \
-		#             which has a lower f than successor, skip this successor
-		#         if a node with the same position as successor is in the CLOSED list \ 
-		#             which has a lower f than successor, skip this successor
-		#         otherwise, add the node to the open list
-		#     end
-		#     push q on the closed list
-		# end
+			closedSet[leastCostState.key] = leastCostState
+			# print(closedSet)
 	#################
 
 	def costs(self):
@@ -221,18 +200,17 @@ class Puzzle:
 
 
 	###   SOLVE   ###
-	def resolved(self):
-		return (self.puzzle == self.goal)
+	def resolved(self, puzzle):
+		return (puzzle == self.goal)
 
 
 	def resolve(self):
+		result = self.aStar()
 
-		while not self.resolved():
-			self.puzzle = self.nextStep()
-			# self.printPuzzle(self.puzzle)
-			# print()
-
-		print("RESOLVED")
+		print(self.printPuzzle(result.puzzle))
+		while result.parent != None:
+			result = result.parent
+			# print(self.printPuzzle(result.puzzle))
 	#################
 		
 
@@ -243,19 +221,24 @@ class Puzzle:
 if __name__ == '__main__':
 
 	# solvable
-	# puzzle = [	[5, 12, 7, 13],
-	# 			[15, 8, 0, 6],
-	# 			[14, 4, 3, 2],
-	# 			[9, 1, 11, 10]	]
-	puzzle = [	[4, 5, 3],
-				[8, 7, 1],
-				[6, 2, 0]	]
+	# puzzle = [	[15, 4, 7, 13],
+	# 			[8, 14, 12, 1],
+	# 			[11, 9, 3, 0],
+	# 			[10, 2, 6, 5]	]
+	# puzzle = [	[15, 4, 8, 17, 7],
+	# 			[24, 10, 9, 20, 14],
+	# 			[13, 2, 6, 3, 5],
+	# 			[18, 16, 1, 11, 12],
+	# 			[21, 23, 22, 0, 19]	]
+	puzzle = [	[3, 7, 2],
+				[8, 1, 5],
+				[6, 4, 0]	]
 
+	test = generate.generatePuzzle(3, False, 500)
 
-	P = Puzzle(puzzle)
-
-	print(P.flatten(P.puzzle))
-	# P.resolve()
+	P = Puzzle(test)
+	# P.printPuzzle(P.puzzle)
+	P.resolve()
 
 	# if not P.solvable():
 	# 	print("Not solvable")
