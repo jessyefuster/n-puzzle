@@ -207,6 +207,12 @@ class Puzzle:
 
 
 	def resolve(self):
+		"""
+		- Complexity in time
+		- Complexity in size
+		- Number of moves from initial state to solution
+		- Ordered sequence of states that make up the solution
+		"""
 		result = self.aStar()
 
 		# print(self.printPuzzle(result.puzzle))

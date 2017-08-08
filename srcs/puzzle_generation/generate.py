@@ -3,8 +3,9 @@ import sys
 import argparse
 import random
 
-def printPuzzle(puzzle, solv):
+def printPuzzle(puzzle, solv, size):
 	print("#{}".format('solvable' if solv else 'unsolvable'))
+	print(size)
 	for line in puzzle:
 		for cell in line:
 			print(cell, end=' ')
@@ -118,4 +119,4 @@ if __name__ == '__main__':
 	puzzle = generatePuzzle(size=args.size, solvable=solvable, iterations=args.iterations)
 
 
-	printPuzzle(puzzle, solvable)
+	printPuzzle(puzzle, solvable, args.size)

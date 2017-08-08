@@ -3,6 +3,11 @@ import sys
 
 var_length = []
 
+def cast_to_int(puzzle):
+	for y, line in enumerate(puzzle):
+		for x, index in enumerate(line):
+			puzzle[y][x] = int(puzzle[y][x])
+
 def check_all_number(puzzle):
 	tab = []
 	for line in puzzle:
@@ -16,7 +21,9 @@ def check_all_number(puzzle):
 
 	for i in range(max(tab)):
 		if ((i + 1) != tab[i + 1]):
-			sys.exit('error: Invalid value')
+			print('error: Invalid value')
+			return (False)
+	return (True)
 
 
 def check_if_good(puzzle):
@@ -33,13 +40,17 @@ def check_if_good(puzzle):
 	for index in check_len_line:
 		if j != 0:
 			if index != tmp:
-				sys.exit('error: All your line have not the same lenght')
+				print('error: All your line have not the same lenght')
+				return (False)
 		tmp = index
 		if len(puzzle) != check_len_line[0]:
-			sys.exit('error: Map is not a square')
+			print('error: Map is not a square')
+			return (False)
 		if check_len_line[0] != int(var_length[0]) or int(var_length[0]) != len(puzzle):
-			sys.exit('error: Length doesn\'t correspond the number at the top of the file.')
+			print('error: Length doesn\'t correspond the number at the top of the file.')
+			return (False)
 		j += 1
+	return (True)
 
 
 
@@ -79,6 +90,7 @@ def parse(fileName):
 	except IOError as e:
 		print("error: %s" % e)
 		return (None)
-	check_if_good(puzzle)
-	check_all_number(puzzle)
+	if not check_if_good(puzzle) or not check_all_number(puzzle):
+		return (None)
+	cast_to_int(puzzle)
 	return (puzzle)
