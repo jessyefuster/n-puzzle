@@ -247,7 +247,7 @@ if __name__ == '__main__':
 			print("Invalid puzzle specified")
 			sys.exit(1)
 	else:
-		puzzle = generate.generatePuzzle(3, False, 200)
+		puzzle = generate.generatePuzzle(3, True, 200)
 
 
 	P = Puzzle(puzzle)
