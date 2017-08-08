@@ -57,18 +57,23 @@ class Puzzle:
 
 	def solvable(self):
 		iterations = 0
-		flatPuzzle = self.flatten(puzzle)
+		flatPuzzle = self.flatten(self.puzzle)
 		flatPuzzle.remove(0)
 
 		for i, value in enumerate(flatPuzzle):
 			for nextValue in flatPuzzle[i + 1:]:
 				if nextValue < value:
 					iterations += 1
-
-		if iterations % 2 == 0: #even
+		if self.size % 2 == 1 and iterations % 2 == 0:
 			return (True)
-		else: #odd
-			return (False)
+		if self.size % 2 == 0:
+			blankRowTop = (self.findEmptyCell(self.puzzle)[0] + 1)
+			blankRow = self.size - blankRowTop + 1
+			if blankRow % 2 == 0 and iterations % 2 == 1:
+				return (True)
+			if blankRow % 2 == 1 and iterations % 2 == 0:
+				return (True)
+		return (False)
 
 	def searchPosition(self, value):
 		for y, line in enumerate(self.goal):
@@ -175,10 +180,8 @@ class Puzzle:
 
 		while OpenSet:
 			leastCostState = heapq.heappop(OpenSet)[1]
-			# print("evaluating {}".format(leastCostState))
 			nextStates = self.nextStates(leastCostState)
 
-			# print('possibilities: ', nextStates)
 			for state in nextStates:
 				if self.resolved(state.puzzle):
 					print("Solution found")
@@ -186,11 +189,9 @@ class Puzzle:
 				if self.better(OpenSet, state) or (state.key in closedSet and closedSet[state.key].cost <= state.cost):
 					pass
 				else:
-					# print('   added ', state)
 					heapq.heappush(OpenSet, (state.cost, state))
 
 			closedSet[leastCostState.key] = leastCostState
-			# print(closedSet)
 	#################
 
 	def costs(self):
@@ -219,28 +220,12 @@ class Puzzle:
 
 
 if __name__ == '__main__':
-
-	# solvable
-	# puzzle = [	[15, 4, 7, 13],
-	# 			[8, 14, 12, 1],
-	# 			[11, 9, 3, 0],
-	# 			[10, 2, 6, 5]	]
-	# puzzle = [	[15, 4, 8, 17, 7],
-	# 			[24, 10, 9, 20, 14],
-	# 			[13, 2, 6, 3, 5],
-	# 			[18, 16, 1, 11, 12],
-	# 			[21, 23, 22, 0, 19]	]
-	puzzle = [	[3, 7, 2],
-				[8, 1, 5],
-				[6, 4, 0]	]
-
-	test = generate.generatePuzzle(3, False, 500)
+	test = generate.generatePuzzle(5, True, 200)
 
 	P = Puzzle(test)
-	# P.printPuzzle(P.puzzle)
-	P.resolve()
+	P.printPuzzle(test)
 
-	# if not P.solvable():
-	# 	print("Not solvable")
-	# else:
-	# 	P.resolve()
+	if not P.solvable():
+		print("Not solvable")
+	else:
+		P.resolve()

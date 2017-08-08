@@ -36,10 +36,14 @@ def shufflePuzzle(puzzle, iterations):
 				pass
 	### SWAP FUNCTIONS ###
 	def swapUp(y, x):
+		if y == 0:
+			raise KeyError
 		puzzle[y][x], puzzle[y - 1][x] = puzzle[y - 1][x], puzzle[y][x]
 	def swapDown(y, x):
 		puzzle[y][x], puzzle[y + 1][x] = puzzle[y + 1][x], puzzle[y][x]
 	def swapLeft(y, x):
+		if x == 0:
+			raise KeyError
 		puzzle[y][x], puzzle[y][x - 1] = puzzle[y][x - 1], puzzle[y][x]
 	def swapRight(y, x):
 		puzzle[y][x], puzzle[y][x + 1] = puzzle[y][x + 1], puzzle[y][x]
