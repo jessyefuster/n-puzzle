@@ -7,6 +7,7 @@ import argparse
 
 from ntree import *
 from puzzle_generation import generate
+from parsing.parse_puzzle import parse
 
 class Puzzle:
 	def __init__(self, puzzle):
@@ -208,7 +209,7 @@ class Puzzle:
 	def resolve(self):
 		result = self.aStar()
 
-		print(self.printPuzzle(result.puzzle))
+		# print(self.printPuzzle(result.puzzle))
 		while result.parent != None:
 			result = result.parent
 			# print(self.printPuzzle(result.puzzle))
@@ -216,16 +217,39 @@ class Puzzle:
 		
 
 
-
+def chooseHeuristic(P, args):
+	if args.euclidian:
+		return (P.euclidian)
+	elif args.misplaced:
+		return (P.misplaced)
+	else:
+		return (P.manhattan)
 
 
 if __name__ == '__main__':
-	test = generate.generatePuzzle(5, True, 200)
+	# ARGUMENT PARSING
+	parser = argparse.ArgumentParser(description="N-puzzle resolver", epilog="If no puzzle entry is specified, a 3x3 puzzle will be generated")
+	parser.add_argument("puzzle", type=str, nargs='?', default=False, help="File of the puzzle")
+	parser.add_argument("-M", "--manhattan", action="store_true", default=True, help="HEURISTIC : Manhattan distance (default)")
+	parser.add_argument("-e", "--euclidian", action="store_true", default=False, help="HEURISTIC : Euclidian distance")
+	parser.add_argument("-m", "--misplaced", action="store_true", default=False, help="HEURISTIC : Misplaced tiles")
+	args = parser.parse_args()
 
-	P = Puzzle(test)
-	P.printPuzzle(test)
+	if args.puzzle:
+		puzzle = parse(args.puzzle)
+		if not puzzle:
+			print("Invalid puzzle specified")
+			sys.exit(1)
+	else:
+		puzzle = generate.generatePuzzle(3, False, 200)
+
+
+	P = Puzzle(puzzle)
+	P.heuristic = chooseHeuristic(P, args)
+	P.printPuzzle(puzzle)
 
 	if not P.solvable():
-		print("Not solvable")
+		print("This puzzle is not solvable")
 	else:
 		P.resolve()
+

@@ -44,17 +44,12 @@ def check_if_good(puzzle):
 
 
 
-def parse():
+def parse(fileName):
 	list_line_puzzle = []
 	puzzle = []
 
 	try:
-		map_name = str(sys.argv[1])
-	except IndexError:
-		print("error: Please enter a map")
-		sys.exit(1)
-	try:
-		with open(map_name) as f:
+		with open(fileName, 'r') as f:
 			map_puzzle = f.readlines()
 			for line in map_puzzle:
 				comment = 0
@@ -83,6 +78,7 @@ def parse():
 
 	except IOError as e:
 		print("error: %s" % e)
+		return (None)
 	check_if_good(puzzle)
 	check_all_number(puzzle)
-	return(puzzle)
+	return (puzzle)
