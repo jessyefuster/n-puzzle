@@ -4,8 +4,8 @@ import argparse
 import random
 
 def printPuzzle(puzzle, solv, size):
-	print("#{}".format('solvable' if solv else 'unsolvable'))
-	print(size)
+	# print("#{}".format('solvable' if solv else 'unsolvable'))
+	# print(size)
 	for line in puzzle:
 		for cell in line:
 			print(cell, end=' ')
@@ -13,15 +13,57 @@ def printPuzzle(puzzle, solv, size):
 
 
 
+# def orderedPuzzle(size):
+# 	"""
+# 	Normal goal mode
+# 	"""
+# 	puzzle = [ [0] * size for i in range(0, size) ]
+# 	number = 1
+
+# 	for y, line in enumerate(puzzle):
+# 		for x, cell in enumerate(line):
+# 			puzzle[y][x] = 0 if ( y == size - 1 and x == size - 1 ) else number
+
+# 			number += 1
+
+# 	return (puzzle)
+
 def orderedPuzzle(size):
+	"""
+	Snail goal mode
+	"""
+	tsize = size * size;
 	puzzle = [ [0] * size for i in range(0, size) ]
-	number = 1
+	numbers = list(range(1, tsize))
+	numbers.append(0)
 
-	for y, line in enumerate(puzzle):
-		for x, cell in enumerate(line):
-			puzzle[y][x] = 0 if ( y == size - 1 and x == size - 1 ) else number
+	x = 0
+	y = 0
+	ix = 1
+	iy = 0
+	maxx = 0
+	maxy = 0
 
-			number += 1
+	for i in range(0, tsize):
+		nx = x + ix
+		ny = y + iy
+
+		puzzle[y][x] = numbers[i]
+
+		if nx < 0 or nx >= size or (ix != 0 and ((nx >= size + maxx) if ix > 0 else (nx < 0 - maxx))):
+			if nx <= 0 or (ix < 0 and nx < 0 - maxx):
+				maxx -= 1
+			iy = ix
+			ix = 0
+
+		elif ny < 0 or ny >= size or (iy != 0 and ((ny >= size + maxy) if iy > 0 else (ny < 0 - maxy))):
+			if ny >= size or (iy > 0 and ny >= size + maxy):
+				maxy -= 1
+			ix = -iy
+			iy = 0
+
+		x += ix
+		y += iy
 
 	return (puzzle)
 

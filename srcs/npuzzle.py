@@ -30,13 +30,44 @@ class Puzzle:
 
 	def makeGoal(self):
 		puzzle = [ [0] * self.size for i in range(0, self.size) ]
-		number = 1
+		numbers = list(range(1, self.tsize))
+		numbers.append(0)
+		# number = 1
 
-		for y, line in enumerate(puzzle):
-			for x, cell in enumerate(line):
-				puzzle[y][x] = 0 if ( y == self.size - 1 and x == self.size - 1 ) else number
+		x = 0
+		y = 0
+		ix = 1
+		iy = 0
+		maxx = 0
+		maxy = 0
 
-				number += 1
+		# print(numbers)
+
+		for i in range(0, self.tsize):
+			nx = x + ix
+			ny = y + iy
+
+			puzzle[y][x] = numbers[i]
+
+			if nx < 0 or nx >= self.size or (ix != 0 and ((nx >= self.size + maxx) if ix > 0 else (nx < 0 - maxx))):
+				if nx <= 0 or (ix < 0 and nx < 0 - maxx):
+					maxx -= 1
+				iy = ix
+				ix = 0
+
+			elif ny < 0 or ny >= self.size or (iy != 0 and ((ny >= self.size + maxy) if iy > 0 else (ny < 0 - maxy))):
+				if ny >= self.size or (iy > 0 and ny >= self.size + maxy):
+					maxy -= 1
+				ix = -iy
+				iy = 0
+
+			x += ix
+			y += iy
+		# for y, line in enumerate(puzzle):
+		# 	for x, cell in enumerate(line):
+		# 		puzzle[y][x] = 0 if ( y == self.size - 1 and x == self.size - 1 ) else number
+
+		# 		number += 1
 
 		return (puzzle)
 
@@ -56,25 +87,53 @@ class Puzzle:
 
 		return (flatPuzzle)
 
-	def solvable(self):
-		iterations = 0
-		flatPuzzle = self.flatten(self.puzzle)
-		flatPuzzle.remove(0)
+	# def solvable(self):
+	# 	"""
+	# 	Normal goal mode
+	# 	"""
+	# 	iterations = 0
+	# 	flatPuzzle = self.flatten(self.puzzle)
+	# 	flatPuzzle.remove(0)
 
-		for i, value in enumerate(flatPuzzle):
-			for nextValue in flatPuzzle[i + 1:]:
-				if nextValue < value:
-					iterations += 1
-		if self.size % 2 == 1 and iterations % 2 == 0:
-			return (True)
+	# 	for i, value in enumerate(flatPuzzle):
+	# 		for nextValue in flatPuzzle[i + 1:]:
+	# 			if nextValue < value:
+	# 				iterations += 1
+	# 	if self.size % 2 == 1 and iterations % 2 == 0:
+	# 		return (True)
+	# 	if self.size % 2 == 0:
+	# 		blankRowTop = (self.findEmptyCell(self.puzzle)[0] + 1)
+	# 		blankRow = self.size - blankRowTop + 1
+	# 		if blankRow % 2 == 0 and iterations % 2 == 1:
+	# 			return (True)
+	# 		if blankRow % 2 == 1 and iterations % 2 == 0:
+	# 			return (True)
+	# 	return (False)
+	def solvable(self):
+		"""
+		Snail goal mode
+		"""
+		def inversions(tab):
+			inv = 0
+
+			for i, value in enumerate(tab):
+				for nextValue in tab[i + 1:]:
+					if (nextValue and value) and nextValue < value:
+						inv += 1
+
+			return (inv)
+
+		startPuzzle = self.flatten(self.puzzle)
+		goalPuzzle = self.flatten(self.goal)
+
+		startInversions = inversions(startPuzzle)
+		goalInversions = inversions(goalPuzzle)
+
 		if self.size % 2 == 0:
-			blankRowTop = (self.findEmptyCell(self.puzzle)[0] + 1)
-			blankRow = self.size - blankRowTop + 1
-			if blankRow % 2 == 0 and iterations % 2 == 1:
-				return (True)
-			if blankRow % 2 == 1 and iterations % 2 == 0:
-				return (True)
-		return (False)
+			startInversions += (self.findEmptyCell(self.puzzle)[0] + 1)
+			goalInversions += (self.findEmptyCell(self.goal)[0] + 1)
+
+		return (startInversions % 2 == goalInversions % 2)
 
 	def searchPosition(self, value):
 		for y, line in enumerate(self.goal):
@@ -175,24 +234,34 @@ class Puzzle:
 	def aStar(self):
 		OpenSet = []
 		closedSet = {}
-		move_number = 0
+		timeComplexity = 1
+		# trashComplexity = 0
+		sizeComplexity = 1
 
 		firstNode = StateNode(puzzle=self.puzzle, g=0, h=self.heuristic(self.puzzle), parent=None)
 		heapq.heappush(OpenSet, (firstNode.cost, firstNode))
 
+		if self.resolved(firstNode.puzzle):
+			print("Success !\n")
+			return (firstNode, timeComplexity, sizeComplexity)
+
 		while OpenSet:
+			lenOpen = len(OpenSet)
+			if lenOpen > sizeComplexity:
+				sizeComplexity = lenOpen
+
 			leastCostState = heapq.heappop(OpenSet)[1]
 			nextStates = self.nextStates(leastCostState)
 
 			for state in nextStates:
 				if self.resolved(state.puzzle):
-					print("move_number: " + str(move_number))
-					print("Solution found")
-					return (state)
+					print("Success !\n")
+					return (state, timeComplexity, sizeComplexity)
 				if self.better(OpenSet, state) or (state.key in closedSet and closedSet[state.key].cost <= state.cost):
+					# trashComplexity += 1
 					pass
 				else:
-					move_number += 1
+					timeComplexity += 1
 					heapq.heappush(OpenSet, (state.cost, state))
 
 			closedSet[leastCostState.key] = leastCostState
@@ -204,6 +273,16 @@ class Puzzle:
 		print(self.misplaced(self.puzzle))
 
 
+	def printDetails(self, sequence, timeC, sizeC, moves):
+		for state in sequence:
+			self.printPuzzle(state)
+			print()
+
+		print('Number of states ever selected in the opened set :                     ', timeC)
+		print('Maximum number of states ever represented in memory at the same time : ', sizeC)
+		print('Number of moves needed to go from initial state to solution :          ', moves)
+
+
 	###   SOLVE   ###
 	def resolved(self, puzzle):
 		return (puzzle == self.goal)
@@ -213,15 +292,25 @@ class Puzzle:
 		"""
 		- Complexity in time
 		- Complexity in size
-		- Number of moves from initial state to solution ------ DONE ! Look at aStar Function in For loop
+		- Number of moves from initial state to solution
 		- Ordered sequence of states that make up the solution
 		"""
-		result = self.aStar()
+		
+		result, timeComplexity, sizeComplexity = self.aStar()
+		
 
-		# print(self.printPuzzle(result.puzzle))
-		while result.parent != None:
+		# DETAILS DISPLAY
+		#	Ordered sequence
+		sequence = []
+
+		while result != None:
+			sequence.append(result.puzzle)
 			result = result.parent
-			# print(self.printPuzzle(result.puzzle))
+		sequence = list( reversed(sequence) )
+		#	Sequence len
+		sequenceLen = len(sequence) - 1
+
+		self.printDetails(sequence, timeComplexity, sizeComplexity, sequenceLen)
 	#################
 		
 
@@ -250,15 +339,18 @@ if __name__ == '__main__':
 			print("Invalid puzzle specified")
 			sys.exit(1)
 	else:
-		puzzle = generate.generatePuzzle(3, True, 200)
+		puzzle = generate.generatePuzzle(4, False, 100)
 
 
 	P = Puzzle(puzzle)
 	P.heuristic = chooseHeuristic(P, args)
+
+	print('Initial state :')
 	P.printPuzzle(puzzle)
 
 	if not P.solvable():
-		print("This puzzle is not solvable")
+		print("\nThis puzzle is not solvable")
 	else:
+		print("\nSolving puzzle...")
 		P.resolve()
 
