@@ -175,6 +175,7 @@ class Puzzle:
 	def aStar(self):
 		OpenSet = []
 		closedSet = {}
+		move_number = 0
 
 		firstNode = StateNode(puzzle=self.puzzle, g=0, h=self.heuristic(self.puzzle), parent=None)
 		heapq.heappush(OpenSet, (firstNode.cost, firstNode))
@@ -185,11 +186,13 @@ class Puzzle:
 
 			for state in nextStates:
 				if self.resolved(state.puzzle):
+					print("move_number: " + str(move_number))
 					print("Solution found")
 					return (state)
 				if self.better(OpenSet, state) or (state.key in closedSet and closedSet[state.key].cost <= state.cost):
 					pass
 				else:
+					move_number += 1
 					heapq.heappush(OpenSet, (state.cost, state))
 
 			closedSet[leastCostState.key] = leastCostState
@@ -210,7 +213,7 @@ class Puzzle:
 		"""
 		- Complexity in time
 		- Complexity in size
-		- Number of moves from initial state to solution
+		- Number of moves from initial state to solution ------ DONE ! Look at aStar Function in For loop
 		- Ordered sequence of states that make up the solution
 		"""
 		result = self.aStar()
