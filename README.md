@@ -1,3 +1,8 @@
+**HOW TO**
+
+1. "source start.sh"
+2. python srcs/npuzzle.py [puzzle_file]
+
 # n-puzzle
 
 The goal of this project is to solve the N-puzzle game using the __A*__ search algorithm or one of its variants.

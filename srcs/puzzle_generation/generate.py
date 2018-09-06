@@ -4,8 +4,8 @@ import argparse
 import random
 
 def printPuzzle(puzzle, solv, size):
-	# print("#{}".format('solvable' if solv else 'unsolvable'))
-	# print(size)
+	print("#{}".format('solvable' if solv else 'unsolvable'))
+	print(size)
 	for line in puzzle:
 		for cell in line:
 			print(cell, end=' ')
