@@ -18,6 +18,7 @@ class Puzzle:
 		self.goal = self.makeGoal()
 
 		self.heuristic = self.manhattan
+		self.greedy = False
 		self.swaps = [self.swapUp, self.swapDown, self.swapLeft, self.swapRight]
 
 
@@ -219,7 +220,7 @@ class Puzzle:
 			puzzle = swap(puzzle, empty)
 			
 			if puzzle:
-				nextStates.append(StateNode(puzzle=puzzle, g=baseState.g + 1, h=self.heuristic(puzzle), parent=baseState))
+				nextStates.append(StateNode(puzzle=puzzle, g=baseState.g + int(not self.greedy), h=self.heuristic(puzzle), parent=baseState))
 
 		return (nextStates)
 
@@ -235,21 +236,12 @@ class Puzzle:
 		OpenSet = []
 		closedSet = {}
 		timeComplexity = 1
-		# trashComplexity = 0
 		sizeComplexity = 1
 
 		firstNode = StateNode(puzzle=self.puzzle, g=0, h=self.heuristic(self.puzzle), parent=None)
 		heapq.heappush(OpenSet, (firstNode.cost, firstNode))
 
-		# if self.resolved(firstNode.puzzle):
-		# 	print("Success !\n")
-		# 	return (firstNode, timeComplexity, sizeComplexity)
-
 		while OpenSet:
-			# lenOpen = len(OpenSet)
-			# if lenOpen > sizeComplexity:
-			# 	sizeComplexity = lenOpen
-
 			leastCostState = heapq.heappop(OpenSet)[1]
 			timeComplexity += 1
 
@@ -259,16 +251,16 @@ class Puzzle:
 
 			nextStates = self.nextStates(leastCostState)
 			for state in nextStates:
-				if self.resolved(state.puzzle):
-					print("Success !\n")
-					return (state, timeComplexity, sizeComplexity)
+				# if self.resolved(state.puzzle):
+				# 	print("Success !\n")
+				# 	return (state, timeComplexity, sizeComplexity)
 
 				if self.better(OpenSet, state):
 					pass
 				elif (state.key in closedSet) and (state.g >= closedSet[state.key].g):
 					pass
 				else:
-					# timeComplexity += 1
+					sizeComplexity += 1
 					heapq.heappush(OpenSet, (state.cost, state))
 
 			closedSet[leastCostState.key] = leastCostState
@@ -338,6 +330,7 @@ if __name__ == '__main__':
 	parser.add_argument("-M", "--manhattan", action="store_true", default=True, help="HEURISTIC : Manhattan distance (default)")
 	parser.add_argument("-e", "--euclidian", action="store_true", default=False, help="HEURISTIC : Euclidian distance")
 	parser.add_argument("-m", "--misplaced", action="store_true", default=False, help="HEURISTIC : Misplaced tiles")
+	parser.add_argument("-g", "--greedy", action="store_true", default=False, help="Greedy search")
 	args = parser.parse_args()
 
 	if args.puzzle:
@@ -346,11 +339,12 @@ if __name__ == '__main__':
 			print("Invalid puzzle specified")
 			sys.exit(1)
 	else:
-		puzzle = generate.generatePuzzle(4, False, 100)
+		puzzle = generate.generatePuzzle(4, True, 100)
 
 
 	P = Puzzle(puzzle)
 	P.heuristic = chooseHeuristic(P, args)
+	P.greedy = args.greedy
 
 	print('Initial state :')
 	P.printPuzzle(puzzle)

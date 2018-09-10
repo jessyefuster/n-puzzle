@@ -25,6 +25,7 @@ class StateNode:
 		for line in self.puzzle:
 			for cell in line:
 				key += str(cell)
+				key += ' '
 
 		return (key)
 		

@@ -32,3 +32,8 @@ You start with a square board made up of N*N cells. One of these cells will be e
 Your search algorithm will have to find a valid sequence of moves in order to reach the
 final state, a.k.a the "snail solution", which depends on the size of the puzzle.
 
+
+_notes_
+
+Greedy A* is described here https://en.wikipedia.org/wiki/A*_search_algorithm#Relations_to_other_algorithms
+
