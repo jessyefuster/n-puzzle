@@ -219,14 +219,14 @@ class Puzzle:
 			puzzle = swap(puzzle, empty)
 			
 			if puzzle:
-				nextStates.append(StateNode(puzzle=puzzle, g=baseState.g, h=self.heuristic(puzzle), parent=baseState))
+				nextStates.append(StateNode(puzzle=puzzle, g=baseState.g + 1, h=self.heuristic(puzzle), parent=baseState))
 
 		return (nextStates)
 
 
 	def better(self, OpenSet, State):
 		for t in OpenSet:
-			if t[1].puzzle == State.puzzle and t[1].cost <= State.cost:
+			if t[1].puzzle == State.puzzle and State.g >= t[1].g:
 				return (True)
 		return (False)
 
@@ -241,27 +241,34 @@ class Puzzle:
 		firstNode = StateNode(puzzle=self.puzzle, g=0, h=self.heuristic(self.puzzle), parent=None)
 		heapq.heappush(OpenSet, (firstNode.cost, firstNode))
 
-		if self.resolved(firstNode.puzzle):
-			print("Success !\n")
-			return (firstNode, timeComplexity, sizeComplexity)
+		# if self.resolved(firstNode.puzzle):
+		# 	print("Success !\n")
+		# 	return (firstNode, timeComplexity, sizeComplexity)
 
 		while OpenSet:
-			lenOpen = len(OpenSet)
-			if lenOpen > sizeComplexity:
-				sizeComplexity = lenOpen
+			# lenOpen = len(OpenSet)
+			# if lenOpen > sizeComplexity:
+			# 	sizeComplexity = lenOpen
 
 			leastCostState = heapq.heappop(OpenSet)[1]
-			nextStates = self.nextStates(leastCostState)
+			timeComplexity += 1
 
+			if self.resolved(leastCostState.puzzle):
+				print("Success !\n")
+				return (leastCostState, timeComplexity, sizeComplexity)
+
+			nextStates = self.nextStates(leastCostState)
 			for state in nextStates:
 				if self.resolved(state.puzzle):
 					print("Success !\n")
 					return (state, timeComplexity, sizeComplexity)
-				if self.better(OpenSet, state) or (state.key in closedSet and closedSet[state.key].cost <= state.cost):
-					# trashComplexity += 1
+
+				if self.better(OpenSet, state):
+					pass
+				elif (state.key in closedSet) and (state.g >= closedSet[state.key].g):
 					pass
 				else:
-					timeComplexity += 1
+					# timeComplexity += 1
 					heapq.heappush(OpenSet, (state.cost, state))
 
 			closedSet[leastCostState.key] = leastCostState
