@@ -22,8 +22,8 @@ _final wanted position_
 
  1 | 2  | 3 
 --| -- | --
-4 | 5 | 6
-7 | 8 | **X**
+8 | **X** | 4
+7 | 6 | 5
 
 ## Beginning
 You start with a square board made up of N*N cells. One of these cells will be empty, the others will contain numbers, starting from 1, that will be unique in this instance of the puzzle.
